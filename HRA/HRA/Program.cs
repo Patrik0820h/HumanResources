@@ -11,7 +11,8 @@ namespace HRA
         public static void Main(string[] args)
         {
             string DbConnString = "server=localhost;port=3307;database=employee;uid=root";
-            Database.DatabaseService(DbConnString);
+            List<Employee> adatok = CsvReader.CsvHelper("employees.csv");
+            Database.DatabaseService(DbConnString, adatok);
         }
     }
 }

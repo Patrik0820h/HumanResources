@@ -9,9 +9,8 @@ namespace HRA
 {
     internal class Database
     {
-        public static void DatabaseService(string ConnString) 
-        {
-            List<Employee> adatok = CsvReader.CsvHelper("employees.csv");
+        public static void DatabaseService(string ConnString, List<Employee> adatok) 
+        {   
 
             using (MySqlConnection conn = new MySqlConnection(ConnString))
             {
@@ -29,10 +28,11 @@ namespace HRA
                 string insertPeopleTable = "INSERT INTO People (FirstName, LastName) VALUES (@FirstName, @LastName)";
                 using (MySqlCommand cmd = new MySqlCommand(insertPeopleTable, conn))
                 {
-                    for (int i = 0; i == adatok.Count; i++) 
+                    for (int i = 0; i <= adatok.Count - 1; i++) 
                     {
-                        cmd.Parameters.AddWithValue("@FirstName", adatok[0].FirstName);
-                        cmd.Parameters.AddWithValue("LastName", adatok[1].LastName);
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@FirstName", adatok[i].FirstName);
+                        cmd.Parameters.AddWithValue("LastName", adatok[i].LastName);
                         cmd.ExecuteNonQuery();
 
                     }
@@ -51,9 +51,10 @@ namespace HRA
                 string insertDepartmentTable = "INSERT INTO Department (Name) VALUES (@Name)";
                 using (MySqlCommand cmd = new MySqlCommand(insertDepartmentTable, conn))
                 {
-                    for(int i = 0;i == adatok.Count; i++)
+                    for(int i = 0;i <= adatok.Count - 1; i++)
                     {
-                        cmd.Parameters.AddWithValue("@Name", adatok[0].Department);
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@Name", adatok[i].Department);
                         cmd.ExecuteNonQuery();
                     }
                     Console.WriteLine("Department tábla sikeresen feltöltve");
@@ -68,12 +69,13 @@ namespace HRA
                     Console.WriteLine("JobPosition Tábla sikeresen létrehozva!");
                 }
 
-                string insertJobPositionTable = "INSERT INTO JobPosition (Name) VALUES (@Name)";
+                string insertJobPositionTable = "INSERT INTO JobPosition (JobName) VALUES (@JobName)";
                 using (MySqlCommand cmd = new MySqlCommand(insertJobPositionTable, conn))
                 {
-                    for (int i = 0; i == adatok.Count; i++)
+                    for (int i = 0; i <= adatok.Count - 1; i++)
                     {
-                        cmd.Parameters.AddWithValue("@Name", adatok[0].JobTitle);
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@JobName", adatok[i].JobTitle);
                         cmd.ExecuteNonQuery();
                     }
                     Console.WriteLine("JobPosition tábla sikeresen feltöltve");
@@ -91,10 +93,11 @@ namespace HRA
                 string insertEmployeeTable = "INSERT INTO Employee (GrossWage, NetWage) VALUES (@GrossWage, @NetWage)";
                 using (MySqlCommand cmd = new MySqlCommand(insertEmployeeTable, conn))
                 {
-                    for (int i = 0; i == adatok.Count; i++)
+                    for (int i = 0; i <= adatok.Count - 1; i++)
                     {
-                        cmd.Parameters.AddWithValue("@GrossWage", adatok[0].GrossWage);
-                        cmd.Parameters.AddWithValue("@NetWage", adatok[0].NetWage);
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@GrossWage", adatok[i].GrossWage);
+                        cmd.Parameters.AddWithValue("@NetWage", adatok[i].NetWage);
                         cmd.ExecuteNonQuery();
                     }
                     Console.WriteLine("Employee tábla sikeresen feltöltve");
@@ -112,10 +115,11 @@ namespace HRA
                 string insertHistoryTable = "INSERT INTO History (BeginDate, EndDate) VALUES (@BeginDate, @EndDate)";
                 using (MySqlCommand cmd = new MySqlCommand(insertHistoryTable, conn))
                 {
-                    for (int i = 0; i == adatok.Count; i++)
+                    for (int i = 0; i <= adatok.Count - 1; i++)
                     {
-                        cmd.Parameters.AddWithValue("@BeginDate", adatok[0].BeginDate);
-                        cmd.Parameters.AddWithValue("@EndDate", adatok[0].EndDate);
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@BeginDate", adatok[i].BeginDate);
+                        cmd.Parameters.AddWithValue("@EndDate", adatok[i].EndDate);
                         cmd.ExecuteNonQuery();
                     }
                     Console.WriteLine("History tábla sikeresen feltöltve");

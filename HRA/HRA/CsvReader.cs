@@ -36,12 +36,11 @@ namespace HRA
                     employee.Department = splittedline[5];
                     employee.BeginDate = DateTime.Parse(splittedline[6]);
                     splittedline[7].Trim(';');
-                    bool fixDate = DateTime.TryParse(splittedline[7], out DateTime FixedDateTime);
-                    if (fixDate) 
+                    if (splittedline[7] != ";") 
                     {
                         employee.EndDate = DateTime.Parse(splittedline[7]);
                     }
-                    employees.Append(employee);
+                    employees.Add(employee);
                 }
             }
             return employees;
