@@ -25,7 +25,7 @@ namespace HRA
                 string header = sr .ReadLine();
                 while (!sr.EndOfStream) 
                 {
-                    line = sr .ReadLine();
+                    line = sr .ReadLine().TrimEnd(';');
                     string[] splittedline = line.Split(',');
                     var employee = new Employee();
                     employee.FirstName = splittedline[0];
@@ -35,8 +35,7 @@ namespace HRA
                     employee.JobTitle = splittedline[4];
                     employee.Department = splittedline[5];
                     employee.BeginDate = DateTime.Parse(splittedline[6]);
-                    splittedline[7].Trim(';');
-                    if (splittedline[7] != ";") 
+                    if (!string.IsNullOrEmpty(splittedline[7]))
                     {
                         employee.EndDate = DateTime.Parse(splittedline[7]);
                     }
