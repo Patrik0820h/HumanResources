@@ -5,15 +5,24 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
+using System.Net.Cache;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
+using System.Net.Http;
+using MySqlX.XDevAPI;
+using Org.BouncyCastle.Asn1.Ocsp;
+using System.IO;
+using Org.BouncyCastle.Asn1.Kisa;
+using System.Diagnostics;
 
 namespace HRA_GUI
 {
     public partial class Form1 : Form
     {
+        int lastSelectedRow;
+        public Dictionary<int, Image> cachedImages = new Dictionary<int, Image>();
         public Form1()
         {
             InitializeComponent();
@@ -37,6 +46,7 @@ namespace HRA_GUI
                     dataGridView1.DataSource = table;
                     dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
                     dataGridView1.MultiSelect = false;
+                    dataGridView1.ReadOnly = true;
                 }
             }
         }
@@ -48,13 +58,14 @@ namespace HRA_GUI
         {}
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex < 0) { return; }
+            if (e.RowIndex == lastSelectedRow) { return; }
 
-            var row = dataGridView1.Rows[e.RowIndex];
+            lastSelectedRow = e.RowIndex;
+            var selectedRow = dataGridView1.Rows[e.RowIndex];
 
-            string firstName = row.Cells["FirstName"].Value.ToString();
-            string lastName = row.Cells["LastName"].Value.ToString();
-            int grossWage = Convert.ToInt32(row.Cells["GrossWage"].Value);
+            string firstName = selectedRow.Cells["FirstName"].Value.ToString();
+            string lastName = selectedRow.Cells["LastName"].Value.ToString();
+            int grossWage = Convert.ToInt32(selectedRow.Cells["GrossWage"].Value);
 
             string connString = "server=localhost;port=3307;database=employee;uid=root";
 
@@ -102,7 +113,33 @@ namespace HRA_GUI
                         MessageBox.Show("Nincs találat");
                     }
                     result.Close();
+                    GetCatPicture("https://cataas.com/cat", e.RowIndex);
+                    
                 }
+            }
+        }
+        private readonly HttpClient Client = new HttpClient();
+        public void GetCatPicture(string url, int rowIndex) 
+        {
+            if (cachedImages[rowIndex] == null)
+            {
+                HttpResponseMessage response = Client.GetAsync(url).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    byte[] responseBody = response.Content.ReadAsByteArrayAsync().Result;
+                    Stream picture = new MemoryStream(responseBody);
+                    pictureBox1.Image = Image.FromStream(picture);
+                    pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+                    cachedImages.Add(rowIndex, pictureBox1.Image);
+                }
+                else
+                {
+                    Console.WriteLine($"Hiba: {response.StatusCode}");
+                }
+            }
+            else 
+            {
+                pictureBox1.Image = cachedImages[rowIndex];
             }
         }
     }
