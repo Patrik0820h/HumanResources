@@ -74,7 +74,7 @@ namespace HRA_GUI
                     if (result != null)
                     {
                         result.Read();
-                        label1.Text = "Munkakör: " + result.GetString(0).Trim();
+                        label1.Text = result.GetString(0).Trim();
                     }
                     else
                     {
@@ -95,7 +95,7 @@ namespace HRA_GUI
                     if (result != null)
                     {
                         result.Read();
-                        label2.Text = "Department: " + result.GetString(0).Trim();
+                        label2.Text = result.GetString(0).Trim();
                     }
                     else
                     {
