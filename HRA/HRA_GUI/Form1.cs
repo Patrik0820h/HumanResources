@@ -33,6 +33,7 @@ namespace HRA_GUI
                     var reader = cmd.ExecuteReader();
                     var table = new DataTable();
                     table.Load(reader);
+
                     dataGridView1.DataSource = table;
                     dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
                     dataGridView1.MultiSelect = false;
@@ -41,14 +42,10 @@ namespace HRA_GUI
         }
 
         private void Form1_Load(object sender, EventArgs e)
-        {
-            
-        }
+        {}
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
+        {}
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) { return; }
@@ -72,35 +69,39 @@ namespace HRA_GUI
                     cmd.Parameters.AddWithValue("@LN", lastName);
                     cmd.Parameters.AddWithValue("@GW", grossWage);
 
-                    var result = cmd.ExecuteScalar();
+                    MySqlDataReader result = cmd.ExecuteReader();
 
                     if (result != null)
                     {
-                        label1.Text = "Munkakör: " + result.ToString();
+                        result.Read();
+                        label1.Text = "Munkakör: " + result.GetString(0).Trim();
                     }
                     else
                     {
                         MessageBox.Show("Nincs találat");
                     }
+                    result.Close();
                 }
 
-                string selectDepartmentName = @"SELECT Name FROM Department JOIN Employee ON Department.Id = JobPosition_ID WHERE FirstName = @FN AND LastName = @LN AND GrossWage = @GW";
+                string selectDepartmentName = @"SELECT Name FROM Department JOIN Employee ON Department.Id = Department_ID WHERE FirstName = @FN AND LastName = @LN AND GrossWage = @GW";
                 using (MySqlCommand cmd = new MySqlCommand(selectDepartmentName, conn))
                 {
                     cmd.Parameters.AddWithValue("@FN", firstName);
                     cmd.Parameters.AddWithValue("@LN", lastName);
                     cmd.Parameters.AddWithValue("@GW", grossWage);
 
-                    var result = cmd.ExecuteScalar();
+                    MySqlDataReader result = cmd.ExecuteReader();
 
                     if (result != null)
                     {
-                        label2.Text = "Munkakör: " + result.ToString();
+                        result.Read();
+                        label2.Text = "Department: " + result.GetString(0).Trim();
                     }
                     else
                     {
                         MessageBox.Show("Nincs találat");
                     }
+                    result.Close();
                 }
             }
         }
