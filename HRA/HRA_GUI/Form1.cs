@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -36,17 +37,72 @@ namespace HRA_GUI
                     dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
                     dataGridView1.MultiSelect = false;
                 }
-                string selectJobTitle = "SELECT JobName FROM JobPosition JOIN Employee ON JobPosition_ID = JobPosition.Id WHERE FirstName = @FN";
-                using (MySqlCommand cmd = new MySqlCommand())
-                {
-
-                }
             }
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0) { return; }
+
+            var row = dataGridView1.Rows[e.RowIndex];
+
+            string firstName = row.Cells["FirstName"].Value.ToString();
+            string lastName = row.Cells["LastName"].Value.ToString();
+            int grossWage = Convert.ToInt32(row.Cells["GrossWage"].Value);
+
+            string connString = "server=localhost;port=3307;database=employee;uid=root";
+
+            using (MySqlConnection conn = new MySqlConnection(connString))
+            {
+                conn.Open();
+
+                string selectJobTitle = @"SELECT JobName FROM JobPosition JOIN Employee ON JobPosition.Id = JobPosition_ID WHERE FirstName = @FN AND LastName = @LN AND GrossWage = @GW";
+                using (MySqlCommand cmd = new MySqlCommand(selectJobTitle, conn))
+                {
+                    cmd.Parameters.AddWithValue("@FN", firstName);
+                    cmd.Parameters.AddWithValue("@LN", lastName);
+                    cmd.Parameters.AddWithValue("@GW", grossWage);
+
+                    var result = cmd.ExecuteScalar();
+
+                    if (result != null)
+                    {
+                        label1.Text = "Munkakör: " + result.ToString();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Nincs találat");
+                    }
+                }
+
+                string selectDepartmentName = @"SELECT Name FROM Department JOIN Employee ON Department.Id = JobPosition_ID WHERE FirstName = @FN AND LastName = @LN AND GrossWage = @GW";
+                using (MySqlCommand cmd = new MySqlCommand(selectDepartmentName, conn))
+                {
+                    cmd.Parameters.AddWithValue("@FN", firstName);
+                    cmd.Parameters.AddWithValue("@LN", lastName);
+                    cmd.Parameters.AddWithValue("@GW", grossWage);
+
+                    var result = cmd.ExecuteScalar();
+
+                    if (result != null)
+                    {
+                        label2.Text = "Munkakör: " + result.ToString();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Nincs találat");
+                    }
+                }
+            }
         }
     }
 }
